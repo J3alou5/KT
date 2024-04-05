@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import Button from './UI/Button';
 import CartContext from '../components/CartContext';
 
@@ -8,12 +8,16 @@ const MealItem = (props) => {
         currency: 'EUR',
     });
 
-     const { addItem, cart } = useContext(CartContext);
+    const { addItemToCart, cart } = useContext(CartContext);
 
-     const addToCartHandler = () => {
-         addItem(props.meal);
-         console.log("Cart contents after adding item:", [...cart, props.meal])
-     };
+    const addToCartHandler = () => {
+        addItemToCart(props.meal);
+        console.log("Cart contents after adding item:", cart)
+    };
+
+    useEffect(() => {
+        console.log("Cart contents after adding item:", cart);
+    }, [cart]);
 
     return (
         <li className="meal-item">

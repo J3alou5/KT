@@ -1,6 +1,6 @@
 const Modal = (props) => {
     return ( 
-        <dialog>
+        <dialog className="modal">
             {props.children}
         </dialog>
         
