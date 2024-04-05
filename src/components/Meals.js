@@ -1,27 +1,33 @@
 import React, { useState, useEffect } from 'react';
+import MealItem from './MealItem';
 
 const Meals = () => {
-    // Initialize state to hold meals data
-    const [meals, setMeals] = useState([]);
+    const [mealsData, setMealsData] = useState([]);
 
     useEffect(() => {
-        
-        fetch('http://localhost:3001/meals')
-            .then(response => response.json()) 
-            .then(data => setMeals(data)) 
-            .catch(error => console.error('Error fetching meals:', error));
-    }, []);
+        // Defined as an IIFE (Immediately Invoked Function Expression) for cleanliness
+        (async () => {
+            try {
+                const response = await fetch('http://localhost:3001/meals');
+                if (!response.ok) {
+                    
+                    throw new Error(`Failed to fetch meals: ${response.status}`);
+                }
+                const mealsData = await response.json();
+                setMealsData(mealsData);
+            } catch (error) {
+                console.error('Error fetching meals:', error);
+            }
+        })();
+    }, []); 
 
     return (
-        <div>
-            <h2>Meals</h2>
-            <ul>
-                {/* Map over meals state to render each meal */}
-                {meals.map((meal, index) => (
-                    <li key={index}>{meal.name}</li> 
-                ))}
-            </ul>
-        </div>
+        <ul id="meals">
+            {mealsData.map(meal => (
+
+                <MealItem key={meal.id} meal={meal} />
+            ))}
+        </ul>
     );
 }
 
