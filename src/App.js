@@ -1,54 +1,39 @@
 import React, { useReducer } from 'react';
 import Header from './components/Header';
 import Meals from './components/Meals';
-import CartContext from './components/CartContext';
+import { CartProvider } from './store/CartContext';
 
-const cartReducer = (state, action) => {
+const initialState = {
+  cartItems: []
+};
+
+const reducer = (state, action) => {
   switch (action.type) {
-    case 'ADD_ITEM': {
-      const existingItemIndex = state.findIndex(item => item.id === action.payload.id);
-      const newState = existingItemIndex !== -1
-        ? state.map((item, index) => index === existingItemIndex 
-          ? { ...item, quantity: item.quantity + 1 } 
-          : item)
-        : [...state, { ...action.payload, quantity: 1 }];
-      return newState;
-    }
-    case 'REMOVE_ITEM': {
-      return state.reduce((acc, currentItem) => {
-        if (currentItem.id === action.payload.id) {
-          if (currentItem.quantity > 1) {
-            return [...acc, { ...currentItem, quantity: currentItem.quantity - 1 }];
-          }
-          return acc;
-        } else {
-          return [...acc, currentItem];
-        }
-      }, []);
-    }
+    case 'ADD_ITEM':
+      const existingItemIndex = state.cartItems.findIndex(item => item.id === action.payload.id);
+      if (existingItemIndex !== -1) {
+        const updatedCartItems = [...state.cartItems];
+        updatedCartItems[existingItemIndex].quantity += 1;
+        return { ...state, cartItems: updatedCartItems };
+      } else {
+        return { ...state, cartItems: [...state.cartItems, { ...action.payload, quantity: 1 }] };
+      }
+    case 'CLEAR_CART':
+      return { ...state, cartItems: [] };
     default:
       return state;
   }
 };
 
 const App = () => {
-  const [cart, dispatch] = useReducer(cartReducer, []);
-
-  const addItemToCart = item => {
-    dispatch({ type: 'ADD_ITEM', payload: item });
-  };
-
-  const removeItemFromCart = id => {
-    dispatch({ type: 'REMOVE_ITEM', payload: { id } });
-  };
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   return (
-    <CartContext.Provider value={{ cart, addItem: addItemToCart, removeItem: removeItemFromCart }}>
+    <CartProvider value={{ cartItems: state.cartItems, dispatch }}>
       <Header />
       <Meals />
-    </CartContext.Provider>
+    </CartProvider>
   );
-}
+};
 
 export default App;
-

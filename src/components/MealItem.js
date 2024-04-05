@@ -1,6 +1,6 @@
 import React, { useContext, useEffect } from 'react';
 import Button from './UI/Button';
-import CartContext from '../components/CartContext';
+import CartContext from '../store/CartContext';
 
 const MealItem = (props) => {
     const currencyFormat = new Intl.NumberFormat('en-US', {
@@ -12,7 +12,6 @@ const MealItem = (props) => {
 
     const addToCartHandler = () => {
         addItemToCart(props.meal);
-        console.log("Cart contents after adding item:", cart)
     };
 
     useEffect(() => {
@@ -29,11 +28,10 @@ const MealItem = (props) => {
                     <p className="meal-item-description">{props.meal.description}</p>
                 </div>
                 <p className="meal-item-actions"> 
-                    <Button onClick={addToCartHandler} textOnly={false} children={'Add to Cart'}/>
+                    <Button textOnly={false} onClick={addToCartHandler}>Add to Cart</Button>
                 </p>
             </article>
         </li>
-        
     )
 }
 
